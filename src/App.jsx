@@ -7,7 +7,7 @@ import "firebase/compat/auth";
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
+import { Menu } from "@ark-ui/react";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBe7tyoD_Qvu3vHlGjfk9LcTgOg9EWbJO4",
@@ -30,7 +30,6 @@ function App() {
   return (
     <div className="App">
       <header></header>
-      <p className="text-red-500">Roll Player</p>
       <section>{user ? <Dashboard /> : <SignIn />}</section>
     </div>
   );
@@ -47,16 +46,22 @@ function SignIn() {
 
 function Dashboard(props) {
   return (
-    <div>
-      <button className="text-red-500">Create Character</button>
-      <Menu as="div">
-        <MenuButton>Menu</MenuButton>
-        <MenuItems>
-          <MenuItem>
-            <SignOut />
-          </MenuItem>
-        </MenuItems>
-      </Menu>
+    <div className="flex flex-col justify-between min-h-screen">
+      <div className="flex justify-end mr-2">
+        <Menu.Root>
+          <Menu.Trigger>Menu</Menu.Trigger>
+          <Menu.Positioner>
+            <Menu.Content>
+              <Menu.Item>
+                <SignOut />
+              </Menu.Item>
+            </Menu.Content>
+          </Menu.Positioner>
+        </Menu.Root>
+      </div>
+      <div>
+        <button>Create Character</button>
+      </div>
     </div>
   );
 }
@@ -64,6 +69,15 @@ function Dashboard(props) {
 function SignOut() {
   return (
     auth.currentUser && <button onClick={() => auth.signOut()}>Sign Out</button>
+  );
+}
+
+function CharacterCard(params) {
+  return (
+    <div>
+      <h1>Character Name</h1>
+      <p>Character Description</p>
+    </div>
   );
 }
 
