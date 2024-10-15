@@ -55,6 +55,9 @@ function Dashboard(props) {
               <Menu.Item>
                 <SignOut />
               </Menu.Item>
+              <Menu.Item>
+                <CharacterCard />
+              </Menu.Item>
             </Menu.Content>
           </Menu.Positioner>
         </Menu.Root>
@@ -72,6 +75,14 @@ function SignOut() {
   );
 }
 
+/**
+ * @typedef CharacterCardProps
+ * @property {string} name
+ * @property {Object} appearance
+ * @property {string} appearance
+ *
+ * @param {CharacterCardProps} params
+ */
 function CharacterCard(params) {
   return (
     <div>
