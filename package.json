@@ -2,6 +2,7 @@
   "name": "rollplayer",
   "version": "0.1.0",
   "dependencies": {
+    "@ark-ui/react": "^5.26.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
