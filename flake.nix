@@ -15,7 +15,12 @@
       pkgs = import nixpkgs {inherit system;};
     in {
       devShells.default = pkgs.mkShell {
-        packages = [pkgs.bun];
+        packages = with pkgs; [
+          bun
+          typescript-language-server
+          prettierd
+          eslint_d
+        ];
       };
     });
 }

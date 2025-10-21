@@ -1,0 +1,39 @@
+@base=localhost:8000
+@auth=Basic root:root
+
+###
+
+POST {{base}}/sql
+Authorization: {{auth}}
+Accept: application/json
+Surreal-NS: root
+Surreal-DB: root
+Content-Type: surql
+
+select * from characters
+
+###
+
+POST {{base}}/sql
+Authorization: {{auth}}
+Accept: application/json
+Surreal-NS: root
+Surreal-DB: root
+Content-Type: surql
+
+create table characters
+
+###
+
+POST {{base}}/sql
+Authorization: {{auth}}
+Accept: application/json
+Surreal-NS: root
+Surreal-DB: root
+Content-Type: surql
+
+insert into characters {
+    name: 'Bloodgrasp'
+}
+
+###

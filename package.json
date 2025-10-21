@@ -1,46 +1,18 @@
 {
-  "name": "rollplayer",
-  "version": "0.1.0",
-  "dependencies": {
-    "@ark-ui/react": "^5.26.2",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "firebase": "^10.14.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-firebase-hooks": "^5.1.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "name": "rollplayer-monorepo",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "concurrently \"cd packages/backend && bun run dev\" \"cd packages/frontend && bun run start\"",
+    "dev:frontend": "cd packages/frontend && bun run start",
+    "dev:backend": "cd packages/backend && bun run dev",
+    "build": "cd packages/backend && bun run build && cd ../frontend && bun run build",
+    "test": "cd packages/frontend && bun run test",
+    "install:all": "bun install"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.13"
+    "concurrently": "^8.2.2"
   }
 }

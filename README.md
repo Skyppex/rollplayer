@@ -1,70 +1,200 @@
-# Getting Started with Create React App
+# RollPlayer - tRPC + SurrealDB Backend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A character management application built with React frontend and tRPC + SurrealDB backend.
 
-## Available Scripts
+## Architecture
 
-In the project directory, you can run:
+- **Frontend**: React (packages/frontend)
+- **Backend**: tRPC + SurrealDB (packages/backend)
+- **Authentication**: Firebase Auth (frontend only)
+- **Database**: SurrealDB (replacing Firestore)
+- **Real-time**: WebSocket subscriptions via tRPC
+- **File Uploads**: Express server with Multer
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Bun](https://bun.sh/) for package management
+- [SurrealDB](https://surrealdb.com/install) installed and running
+- Firebase project configured
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Setup
 
-### `npm test`
+### 1. Install Dependencies
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+# Install root dependencies
+bun install
 
-### `npm run build`
+# Install all workspace dependencies
+bun run install:all
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Start SurrealDB
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+# Start SurrealDB locally
+surreal start --user root --pass root
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Configure Environment Variables
 
-### `npm run eject`
+Copy the environment example and fill in your Firebase credentials:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+cp packages/backend/.env.example packages/backend/.env
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Update the following variables in `packages/backend/.env`:
+```env
+# Firebase Admin Configuration
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-...@your-project.iam.gserviceaccount.com
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 4. Update Frontend Firebase Config
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Update the Firebase configuration in `packages/frontend/src/App.jsx` with your project credentials.
 
-## Learn More
+### 5. Run the Application
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+# Development mode (runs both frontend and backend)
+bun run dev
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Or run individually:
+bun run dev:frontend  # React app on http://localhost:3000
+bun run dev:backend   # tRPC server on http://localhost:3001
+```
 
-### Code Splitting
+## API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The backend runs multiple servers:
 
-### Analyzing the Bundle Size
+- **tRPC HTTP**: `http://localhost:3001` - Main API
+- **tRPC WebSocket**: `ws://localhost:3002` - Real-time subscriptions
+- **Upload Server**: `http://localhost:3003` - File uploads
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Available tRPC Routes
 
-### Making a Progressive Web App
+### User Routes (`trpc.user`)
+- `me()` - Get current user profile
+- `updateProfile(data)` - Update user profile
+- `getById(userId)` - Get user by ID
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Character Routes (`trpc.character`)
+- `list()` - Get all characters for current user
+- `getById(id)` - Get character by ID
+- `create(data)` - Create new character
+- `update(id, data)` - Update character
+- `delete(id)` - Delete character
+- `onUpdate()` - Real-time subscription for character updates
 
-### Advanced Configuration
+### Upload Routes (`trpc.upload`)
+- `list(limit, offset)` - List user's files
+- `getById(id)` - Get file by ID
+- `delete(id)` - Delete file
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### File Upload
+- `POST /upload` - Upload files (multipart/form-data)
+- `GET /uploads/:filename` - Serve uploaded files
 
-### Deployment
+## Real-time Features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The application supports real-time updates using SurrealDB's live queries and tRPC subscriptions:
 
-### `npm run build` fails to minify
+```javascript
+// Subscribe to character updates
+const subscription = trpc.character.onUpdate.useSubscription();
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Database Schema
+
+### User Table
+```sql
+{
+  id: "user:firebase_uid",
+  uid: "firebase_uid",
+  email: "user@example.com",
+  displayName?: "Display Name",
+  photoURL?: "https://...",
+  createdAt: "2023-...",
+  updatedAt: "2023-..."
+}
+```
+
+### Character Table
+```sql
+{
+  id: "character:uuid",
+  userId: "user:firebase_uid",
+  name: "Character Name",
+  class: "Fighter",
+  level: 1,
+  stats: {
+    strength: 10,
+    dexterity: 10,
+    constitution: 10,
+    intelligence: 10,
+    wisdom: 10,
+    charisma: 10
+  },
+  createdAt: "2023-...",
+  updatedAt: "2023-..."
+}
+```
+
+### File Upload Table
+```sql
+{
+  id: "file_upload:uuid",
+  userId: "user:firebase_uid",
+  filename: "generated_filename.ext",
+  originalName: "original_filename.ext",
+  mimetype: "image/jpeg",
+  size: 1024000,
+  url: "/uploads/generated_filename.ext",
+  createdAt: "2023-..."
+}
+```
+
+## Development
+
+### Building
+
+```bash
+# Build both frontend and backend
+bun run build
+
+# Build individually
+bun run build --workspace=packages/frontend
+bun run build --workspace=packages/backend
+```
+
+### Testing
+
+```bash
+# Run tests
+bun run test
+```
+
+### Type Checking
+
+The backend includes TypeScript for full type safety:
+
+```bash
+cd packages/backend
+bun run type-check
+```
+
+## Production Deployment
+
+1. Build the application
+2. Set up SurrealDB in production
+3. Configure environment variables
+4. Deploy the built frontend and backend
+5. Update CORS origins in the backend configuration
+
+## Migration from Firebase
+
+This setup keeps Firebase Auth for authentication while replacing Firestore with SurrealDB. The backend automatically creates users in SurrealDB when they first authenticate through Firebase.
