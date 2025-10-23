@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectToDatabase, disconnectFromDatabase } from "./lib/db.js";
 import { createContext } from "./lib/trpc.js";
-import { startUploadServer } from "./lib/upload-server.js";
 import { appRouter } from "./routes/index.js";
 
 // Load environment variables
@@ -32,8 +31,8 @@ async function main() {
     }),
   });
 
-  // Start the upload server
-  await startUploadServer(UPLOAD_PORT);
+  // // Start the upload server
+  // await startUploadServer(UPLOAD_PORT);
 
   // Start the HTTP server
   server.listen(PORT, () => {
@@ -65,4 +64,3 @@ main().catch((error) => {
   console.error("❌ Failed to start server:", error);
   process.exit(1);
 });
-

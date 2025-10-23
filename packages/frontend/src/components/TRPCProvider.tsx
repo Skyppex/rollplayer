@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { trpc, trpcClient } from "../lib/trpc";
 
 interface TRPCProviderProps {
-  children: ReactNode;
+  children: React.ReactElement | React.ReactElement[];
 }
 
 export function TRPCProvider({ children }: TRPCProviderProps) {
@@ -14,7 +14,7 @@ export function TRPCProvider({ children }: TRPCProviderProps) {
           queries: {
             staleTime: 5 * 1000, // 5 seconds
             retry: (failureCount, error) => {
-              return failureCount < 0;
+              return failureCount < 3;
             },
           },
         },
@@ -23,8 +23,9 @@ export function TRPCProvider({ children }: TRPCProviderProps) {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}></QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <div>{children}</div>
+      </QueryClientProvider>
     </trpc.Provider>
   );
 }
-

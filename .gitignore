@@ -24,7 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # localhost
-/rollplayer.db
+/db
 
 # sources
 /sources

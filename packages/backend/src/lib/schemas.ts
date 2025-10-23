@@ -4,18 +4,18 @@ import { z } from "zod";
 export const UserSchema = z.object({
   id: z.string(),
   uid: z.string(), // Firebase UID
-  email: z.string().email(),
+  email: z.email(),
   displayName: z.string().optional(),
   photoURL: z.string().optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type User = z.infer<typeof UserSchema>;
 
 // Example: Character schema (for RPG context)
 export const CharacterSchema = z.object({
-  id: z.string(),
+  id: z.uuidv4(),
   userId: z.string(),
   name: z.string(),
   class: z.string(),
@@ -28,8 +28,8 @@ export const CharacterSchema = z.object({
     wisdom: z.number(),
     charisma: z.number(),
   }),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type Character = z.infer<typeof CharacterSchema>;
@@ -43,7 +43,7 @@ export const FileUploadSchema = z.object({
   mimetype: z.string(),
   size: z.number(),
   url: z.string(),
-  createdAt: z.string().datetime(),
+  createdAt: z.date(),
 });
 
 export type FileUpload = z.infer<typeof FileUploadSchema>;
