@@ -11,8 +11,6 @@ export interface Context {
   db: typeof db;
 }
 
-const users = "users";
-
 // Create context from HTTP request
 export async function createContext({
   req,
@@ -29,9 +27,11 @@ export async function createContext({
       const decodedToken = await auth.verifyIdToken(token);
 
       // Get or create user in SurrealDB
-      const [existingUser] = await db.select<User>(
-        `${users}:${decodedToken.uid}`,
+      const existingUser = await db.select<User>(
+        new RecordId("users", decodedToken.uid),
       );
+
+      console.log(existingUser);
 
       if (existingUser) {
         user = existingUser;
@@ -39,10 +39,9 @@ export async function createContext({
         // Create new user in SurrealDB
         const now = new Date();
         const newUser = await db.create<User>(
-          new RecordId(users, decodedToken.uid),
+          new RecordId("users", decodedToken.uid),
           {
-            id: new RecordId(users, decodedToken.uid).toString(),
-            uid: decodedToken.uid,
+            id: decodedToken.uid,
             email: decodedToken.email || "",
             displayName: decodedToken.name,
             photoURL: decodedToken.picture,

@@ -1,13 +1,15 @@
 @base=localhost:8000
 @auth=Basic root:root
+@namespace=rollplayer
+@database=main
 
 ###
 
 POST {{base}}/sql
 Authorization: {{auth}}
 Accept: application/json
-Surreal-NS: root
-Surreal-DB: root
+Surreal-NS: {{namespace}}
+Surreal-DB: {{database}}
 Content-Type: surql
 
 select * from characters
@@ -17,19 +19,19 @@ select * from characters
 POST {{base}}/sql
 Authorization: {{auth}}
 Accept: application/json
-Surreal-NS: root
-Surreal-DB: root
+Surreal-NS: {{namespace}}
+Surreal-DB: {{database}}
 Content-Type: surql
 
-create table characters
+delete characters
 
 ###
 
 POST {{base}}/sql
 Authorization: {{auth}}
 Accept: application/json
-Surreal-NS: root
-Surreal-DB: root
+Surreal-NS: {{namespace}}
+Surreal-DB: {{database}}
 Content-Type: surql
 
 insert into characters {
@@ -37,3 +39,12 @@ insert into characters {
 }
 
 ###
+
+POST {{base}}/sql
+Authorization: {{auth}}
+Accept: application/json
+Surreal-NS: {{namespace}}
+Surreal-DB: {{database}}
+Content-Type: surql
+
+info for db

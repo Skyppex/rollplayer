@@ -2,8 +2,7 @@ import { z } from "zod";
 
 // User schema
 export const UserSchema = z.object({
-  id: z.string(),
-  uid: z.string(), // Firebase UID
+  id: z.string(), // Firebase UID
   email: z.email(),
   displayName: z.string().optional(),
   photoURL: z.string().optional(),

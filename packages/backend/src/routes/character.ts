@@ -1,3 +1,4 @@
+import { RecordId } from "surrealdb";
 import { z } from "zod";
 import {
   Character,
@@ -10,10 +11,15 @@ export const characterRouter = router({
   // Get all characters for the current user
   list: protectedProcedure.query(async ({ ctx }) => {
     const characters = await ctx.db.query<Character[]>(
-      "SELECT * FROM character WHERE userId = $userId ORDER BY createdAt DESC",
+      "SELECT * FROM characters WHERE userId = $userId ORDER BY createdAt DESC",
       { userId: ctx.user.id },
     );
-    return characters[0] || [];
+
+    // this is really dumb. characters has the type Character[]
+    // but is actually a Character[][] during runtime but the outer array just
+    // always has a single element with the proper response so we can just do
+    // this little number to get it fixed
+    return (characters as any)[0] as Character[];
   }),
 
   // Get a specific character by ID
@@ -30,10 +36,11 @@ export const characterRouter = router({
     .input(CreateCharacterInput)
     .mutation(async ({ ctx, input }) => {
       const now = new Date();
-      const characterId = `character:${crypto.randomUUID()}`;
+      const uuid = crypto.randomUUID();
+      const characterId = new RecordId("characters", uuid);
 
       const character = await ctx.db.create<Character>(characterId, {
-        id: characterId,
+        id: uuid,
         userId: ctx.user.id,
         createdAt: now,
         updatedAt: now,
