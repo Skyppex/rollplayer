@@ -18,8 +18,10 @@
         packages = with pkgs; [
           bun
           typescript-language-server
+          tailwindcss-language-server
           prettierd
           eslint_d
+          nil
         ];
       };
     });
